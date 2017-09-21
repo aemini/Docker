@@ -10,10 +10,12 @@ services:
       - "tomcat"
     restart: always
     volumes:
+      - "./htdocs:/var/www/localhost"
       - "./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf"
       - "./logs/nginx:/var/log/nginx"
     depends_on:
       - "tomcat"
+      - "php"
   tomcat:
     image: tomcat:8.0-jre8-alpine
     container_name: tomcat
@@ -35,3 +37,14 @@ services:
     environment:
       - POSTGRES_USER=aemini
       - POSTGRES_PASSWORD=secret
+  php:
+    build:
+      context: ./docker
+      dockerfile: php-fpm/Dockerfile
+    container_name: php-fpm
+    restart: always
+    links:
+      - "postgres"
+    volumes:
+      - "./htdocs:/var/www/localhost"
+      - "./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
