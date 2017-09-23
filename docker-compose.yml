@@ -24,8 +24,10 @@ services:
       - "./webapp:/usr/local/tomcat/webapps"
     depends_on:
       - "postgres"
+      - "redis"
     links:
       - "postgres"
+      - "redis"
   postgres:
     image: postgres:9.6.5-alpine
     container_name: postgresql
@@ -37,6 +39,12 @@ services:
     environment:
       - POSTGRES_USER=aemini
       - POSTGRES_PASSWORD=secret
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
   php:
     build:
       context: ./docker
