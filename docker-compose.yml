@@ -8,6 +8,7 @@ services:
       - "443:443"
     links:
       - "tomcat"
+      - "mongodb"
     restart: always
     volumes:
       - "./htdocs:/var/www/localhost"
@@ -25,6 +26,7 @@ services:
     depends_on:
       - "postgres"
       - "redis"
+      - "mongodb"
     links:
       - "postgres"
       - "redis"
@@ -45,6 +47,14 @@ services:
     ports:
       - "6379:6379"
     restart: always
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - "./mongodata:/data/db"
   php:
     build:
       context: ./docker
@@ -53,6 +63,7 @@ services:
     restart: always
     links:
       - "postgres"
+      - "mongodb"
     volumes:
       - "./htdocs:/var/www/localhost"
       - "./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
