@@ -9,6 +9,7 @@ services:
     links:
       - "tomcat"
       - "mongodb"
+      - "mysql"
     restart: always
     volumes:
       - "./htdocs:/var/www/localhost"
@@ -27,6 +28,7 @@ services:
       - "postgres"
       - "redis"
       - "mongodb"
+      - "mysql"
     links:
       - "postgres"
       - "redis"
@@ -37,10 +39,22 @@ services:
       - "5432:5432"
     restart: always
     volumes:
-      - "./data:/var/lib/postgresql/data"
+      - "./data/postgres:/var/lib/postgresql/data"
     environment:
       - POSTGRES_USER=aemini
       - POSTGRES_PASSWORD=secret
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=fakmakyu
+      - MYSQL_USER=aemini
+      - MYSQL_PASSWORD=secret
   redis:
     image: redis:alpine
     container_name: redis
@@ -54,7 +68,7 @@ services:
       - "27017:27017"
     restart: always
     volumes:
-      - "./mongodata:/data/db"
+      - "./data/mongodb:/data/db"
   php:
     build:
       context: ./docker
@@ -64,6 +78,7 @@ services:
     links:
       - "postgres"
       - "mongodb"
+      - "mysql"
     volumes:
       - "./htdocs:/var/www/localhost"
       - "./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
