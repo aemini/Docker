@@ -10,6 +10,7 @@ services:
       - "tomcat"
       - "mongodb"
       - "mysql"
+      - "elastic"
     restart: always
     volumes:
       - "./htdocs:/var/www/localhost"
@@ -32,6 +33,21 @@ services:
     links:
       - "postgres"
       - "redis"
+      - "mongodb"
+      - "elastic"
+  elastic:
+    image: elasticsearch:alpine
+    container_name: elasticsearch
+    restart: always
+    volumes:
+      - "./data/elasticsearch:/usr/share/elasticsearch/data"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - cluster.name=elasticluster
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   postgres:
     image: postgres:9.6.5-alpine
     container_name: postgresql
@@ -61,6 +77,8 @@ services:
     ports:
       - "6379:6379"
     restart: always
+    volumes:
+      - "./data/redis:/data"
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -79,6 +97,7 @@ services:
       - "postgres"
       - "mongodb"
       - "mysql"
+      - "elastic"
     volumes:
       - "./htdocs:/var/www/localhost"
       - "./etc/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
